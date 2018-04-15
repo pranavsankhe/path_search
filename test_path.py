@@ -48,8 +48,9 @@ def search(grid,init,goal,cost,heuristic):
     x = init[0]
     y = init[1]
     g = 0
+    h = heuristic[x][y] + g
 
-    open = [[g, x, y]]
+    open = [[h, g, x, y]]
 
     found = False  # flag that is set when search is complete
     resign = False # flag set if we can't find expand
@@ -63,29 +64,26 @@ def search(grid,init,goal,cost,heuristic):
             open.sort()
             open.reverse()
             next = open.pop()
-            x = next[1]
-            y = next[2]
-            g = next[0]
+            x = next[2]
+            y = next[3]
+            g = next[1]
+
             expand[x][y] = count
             count += 1
             
             if x == goal[0] and y == goal[1]:
                 found = True
             else:
-                candidates = []
                 for i in range(len(delta)):
                     x2 = x + delta[i][0]
                     y2 = y + delta[i][1]
                     if x2 >= 0 and x2 < len(grid) and y2 >=0 and y2 < len(grid[0]):
                         if closed[x2][y2] == 0 and grid[x2][y2] == 0:
                             g2 = g + cost
-                            candidates.append([ (heuristic[x2][y2] + g2), x2, y2, g2]) 
-                            compare = min(candidates)
+                            h2 = heuristic[x2][y2] + g
+                            open.append([h2, g2, x2, y2])
+                            closed[x2][y2] = 1
 
-                for candidate in (candidates):           
-                    if candidate[0] == compare[0]:
-                        open.append([candidate[3], candidate[1], candidate[2]])
-                        closed[candidate[1]][candidate[2]] = 1
 
 
     return expand
